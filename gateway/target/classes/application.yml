@@ -1,0 +1,94 @@
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+       - id: server1
+         uri: lb://eureka-server1
+         predicates:
+           - Path=/server1/hello
+         filters:
+           - CustomRequestRateLimit=1
+           - StripPrefix=1
+       - id: server2
+         uri: lb://eureka-server1
+         predicates:
+           - Path=/server1/twoDog
+         filters:
+           - name: RequestRateLimiter
+             args:
+              key-resolver: "#{@hostAddrKeyResolver}"
+              redis-rate-limiter.replenishRate: 1 # 令牌桶填充的速率 秒为单位
+              redis-rate-limiter.burstCapacity: 1 # 令牌桶总容量
+              redis-rate-limiter.requestedTokens: 1 # 每次请求获取的令牌数
+       - id: baidu
+         uri: https://www.baidu.com
+         predicates:
+           - Path=/baidu/**
+         filters:
+           - Custom= My Custom Message, true, true
+           - RedirectTo=302, https://www.baidu.com
+       - id: client1
+         uri: lb://eureka-client1
+         predicates:
+           - Path=/gateway/client1/**
+         filters:
+#           - SaveSession
+           - StripPrefix=2
+           # - ModifyResponse=205
+           - ModifyRequest=name, yzh1996
+       - id: server1Session # 测试session共享
+         uri: lb://eureka-server1
+         predicates:
+           - Path=/gateway/server1/**
+         filters:
+           - StripPrefix=2
+#           - SaveSession
+           # - ModifyResponse=205
+           - ModifyRequest=name, yzh1996
+       - id: portal
+         uri: lb://portal
+         predicates:
+           - Path=/gateway/portal/**
+         filters:
+           - StripPrefix=2
+           - ModifyRequest=name, yzh1996
+      httpclient:
+        ssl:
+          use-insecure-trust-manager: true # 信任所有证书
+          handshake-timeout: 30s
+      default-filters:
+        - name: CircuitBreaker
+          args:
+            name: myCircuitBreaker
+            fallbackUri: forward:/error # 默认熔断
+  redis:
+    host: localhost
+    port: 6379
+  main:
+    allow-bean-definition-overriding: true
+  webflux:
+    base-path: /
+server:
+  ssl:
+    enabled: true # 开始ssl认证
+    key-alias: client1 # 证书别名
+    key-store: classpath:client1.keystore # 证书位置
+    key-store-type: JKS # 秘钥库存储类型
+    key-store-password: 123456 # 秘钥库口令
+    trust-store: classpath:trustStore.keystore # 信任库证书位置
+    trust-store-type: JKS # 信任库秘钥存储类型
+    trust-store-password: 123456 # 秘钥库口令
+  port: 7885
+eureka:
+  client:
+    service-url:
+      defaultZone: https://localhost:8761/eureka
+  instance:
+    secure-port-enabled: true
+    non-secure-port-enabled: false
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty.http.client: DEBUG

@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: eureka-server
+eureka:
+  instance:
+    statusPageUrl: https://${eureka.instance.hostname}:${server.port}/info
+    healthCheckUrl: https://${eureka.instance.hostname}:${server.port}/health
+    homePageUrl: https://${eureka.instance.hostname}:${server.port}/
+    hostname: localhost
+  client:
+    register-with-eureka: false # 屏蔽注册信息
+    fetch-registry: false # 是否检测服务
+  server:
+    enable-self-preservation: true # 开启自动保护机制
+server:
+  port: 8761
+  ssl:
+    enabled: true # 开始ssl认证
+    key-alias: eurekaServer # 证书别名
+    key-store: classpath:eurekaServer.keystore # 证书位置
+    key-store-type: JKS # 秘钥库存储类型
+    key-store-password: 123456 # 秘钥库口令

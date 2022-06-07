@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=MySQL # mem指定数据库使用内存模式 MODE指定使用MySQL模式
+    driver-class-name: org.h2.Driver
+    username: root
+    password: 123456
+    schema: classpath:db/schema.sql # 表结构脚本
+    data: classpath:db/data.sql # 表数据脚本
+  h2:
+    console:
+      enabled: true # 访问h2数据库控制台
+server:
+  ssl:
+    enabled: true # 开始ssl认证
+    key-alias: server1 # 证书别名
+    key-store: classpath:server1.keystore # 证书位置
+    key-store-type: JKS # 秘钥库存储类型
+    key-store-password: ENC(Muhq57xdiHA5jJX9pX7zmNz57w4emX2D/XYIXOMEx0LYcTL7RYyadWe2J7GCi9KJ) # 秘钥库口令
+    trust-store: classpath:trustStore.keystore # 信任库证书位置
+    trust-store-type: JKS # 信任库秘钥存储类型
+    trust-store-password: ENC(Muhq57xdiHA5jJX9pX7zmNz57w4emX2D/XYIXOMEx0LYcTL7RYyadWe2J7GCi9KJ) # 秘钥库口令
+  port: 7883
+eureka:
+  client:
+    service-url:
+      defaultZone: https://localhost:8761/eureka
+jasypt:
+  encryptor:
+    password: TKzhc3fz # 设置加密的password信息 类似秘钥？
+test:
+  password: ENC(Muhq57xdiHA5jJX9pX7zmNz57w4emX2D/XYIXOMEx0LYcTL7RYyadWe2J7GCi9KJ) # 测试数据
