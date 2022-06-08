@@ -22,7 +22,8 @@ public class AccountDaoTest {
     @Autowired
     private AccountDao accountDao;
 
-    @Test
+    // 切换为JUnit5注解
+    @org.junit.jupiter.api.Test
     public void queryList() {
         List<Account> accountList = accountDao.queryList();
         Assert.assertEquals(3, accountList.size());
