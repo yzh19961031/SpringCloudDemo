@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: zookeeper-server
+  cloud:
+    zookeeper:
+      connect-string: 10.211.55.3:2181
+      discovery:
+        root: /yzh-services # 设置服务发现的root节点
+server:
+  port: 8833
